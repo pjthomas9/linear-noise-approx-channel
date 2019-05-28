@@ -6,6 +6,7 @@ Code for linear noise approximation analysis of signal transduction information 
 Fig 1
 Fig 2a
 Fig 2b
+Fig 3
 etc.
 
 # Matlab Utility Files
