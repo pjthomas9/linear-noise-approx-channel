@@ -1,4 +1,4 @@
-%NOTE: Comment/Uncomment lines 14-15 to specify ring vs chain
+%NOTE: Comment/Uncomment lines 20-22 to specify the channel
 
 dp = 3e-2; % specify the increments of p (probability of high input) to sweep through
 p_min = dp/2; % minumum value of p to plot
@@ -17,9 +17,9 @@ gap_ratio_low = zeros(1, length(p_list));
 gap_ratio_high = zeros(1, length(p_list));
 
 for j = 1:length(p_list)
-    [SE_FOS, SE_POS_low, SE_POS_high, SE_FOS_exact] = MI_3state_chain(p_list(j)); %Computes MI for Fully and Partially Observed Chain
-    %[SE_FOS, SE_POS_low, SE_POS_high] = MI_3state_ring(p_list(j)); %Computes MI for Fully and Partially Observed Ring
-    %[SE_FOS, SE_POS_low, SE_POS_high] = MI_ACh(p_list(j)); %Computes MI for Fully and Partially Observed ACh model
+    [SE_FOS, SE_POS_low, SE_POS_high, SE_FOS_exact] = SE_3state_chain(p_list(j)); %Computes MI for Fully and Partially Observed Chain
+    %[SE_FOS, SE_POS_low, SE_POS_high] = SE_3state_ring(p_list(j)); %Computes MI for Fully and Partially Observed Ring
+    %[SE_FOS, SE_POS_low, SE_POS_high] = SE_ACh(p_list(j)); %Computes MI for Fully and Partially Observed ACh model
     
   
     
