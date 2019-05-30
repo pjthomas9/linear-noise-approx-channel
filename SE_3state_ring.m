@@ -1,11 +1,8 @@
-% Last Updated: Ooctboer 3rd, 2018
+% Last Updated: May 30th, 2019
 
-% Function to find the mutual information in a three state ring model 
+% Function to find spectral efficiency for three-state ring (e.g. ChR2)
 
-%function [MI_FOS, MI_POS, MI_gap] = MI_3state_ring(p)
-
-
-function [SE_FOS, SE_POS_low, SE_POS_high, beta1, beta2, beta3, beta4, beta1_prime, beta2_prime, beta3_prime, beta4_prime, x, y, z] = MI_3state_ring(p)
+function [SE_full, SE_part_low, SE_part_high] = SE_3state_ring(p)
 
 %% Input Parameters
 % Constants we must specify
@@ -24,11 +21,6 @@ eta = 1;
 % Measurement Vector
 C = [0; 1; 0]; % Measurement vector for 2nd state observable
 
-dt = pi*1e0; % "nominal" timestep
-
-r=100;
-s=100;
-
 %% Build the transition matrix A
 
 a0 = zeros(3,3);% rates with no input
@@ -36,12 +28,12 @@ a1 = zeros(3,3);% rates proportional to input
 
 % rates with no input
 a0(2,1) = 0; % transition rate from state 1 to state 2
-a0(3,2) = 1; % transition rate from state 2 to state 3
-a0(1,3) = 1; % transition rate from state 3 to state 1
+a0(3,2) = 50; % transition rate from state 2 to state 3
+a0(1,3) = 17; % transition rate from state 3 to state 1
 a0 = a0-diag(sum(a0,1)); % cols sum to zero
 
 % rates proportional to input 
-a1(2,1) = 1; % transition rate from state 1 to state 2
+a1(2,1) = 5e-3; % transition rate from state 1 to state 2
 a1(3,2) = 0; % transition rate from state 2 to state 3
 a1(1,3) = 0; % transition rate from state 3 to state 1
 a1 = a1-diag(sum(a1,1)); % cols sum to zero
@@ -92,157 +84,38 @@ eig_A=d_A(find(real(d_A)<-1e-9));
 eigV_A=v_A(:,find(real(d_A)<-1e-9));
 eigU_A=u_A(:,find(real(d_A)<-1e-9));
 
-%disp(eigU_A'*eigV_A)
-
-% %Force the eigenvalue-vector pair associated with positive imaginary part
-% %to be first
-% eigV_A_placeholder = eigV_A;
-% eigU_A_placeholder = eigU_A;
-% eigA_placeholder = eig_A;
-% 
-% if imag(eig_A(1)) < 0
-%     eigV_A(:,2) = eigV_A_placeholder(:,1);
-%     eigV_A(:,1) = eigV_A_placeholder(:,2);
-%     eigU_A(:,2) = eigU_A_placeholder(:,1);
-%     eigU_A(:,1) = eigU_A_placeholder(:,2);
-%     eig_A(1) = eigA_placeholder(2);
-%     eig_A(2) = eigA_placeholder(1);
-% end
-% 
-
-
-%C = eigU_A(:,1);
-
+%% Partially Observed System (SE_part)
 
 beta1_prime = (C'*eigV_A(:,1))*(eigU_A(:,1)'*BbBbt*eigU_A(:,1))*(eigV_A(:,1)'*C);
 beta2_prime = (C'*eigV_A(:,2))*(eigU_A(:,2)'*BbBbt*eigU_A(:,2))*(eigV_A(:,2)'*C);
 beta3_prime = (C'*eigV_A(:,1))*(eigU_A(:,1)'*BbBbt*eigU_A(:,2))*(eigV_A(:,2)'*C);
 beta4_prime = (C'*eigV_A(:,2))*(eigU_A(:,2)'*BbBbt*eigU_A(:,1))*(eigV_A(:,1)'*C);
 
-x = eigV_A(:,1)*eigU_A(:,1)';
-y = eigV_A(:,1)*eigU_A(:,1)';
-z = eigV_A(:,1)*eigU_A(:,1)';
-
-x = x(2,1);
-y = y(2,2);
-z = z(2,3);
-
 beta1 = (C'*eigV_A(:,1))*(eigU_A(:,1)'*BBt*eigU_A(:,1))*(eigV_A(:,1)'*C);
 beta2 = (C'*eigV_A(:,2))*(eigU_A(:,2)'*BBt*eigU_A(:,2))*(eigV_A(:,2)'*C);
 beta3 = (C'*eigV_A(:,1))*(eigU_A(:,1)'*BBt*eigU_A(:,2))*(eigV_A(:,2)'*C);
 beta4 = (C'*eigV_A(:,2))*(eigU_A(:,2)'*BBt*eigU_A(:,1))*(eigV_A(:,1)'*C);
 
-%These equations below will need to be rederived since they are only valid
-%for real eigenvalues.
-% SE_POS_low = log((beta1_prime*eig_A(2)^2 + beta2_prime*eig_A(1)^2 + beta3_prime*eig_A(1)*eig_A(2) + beta4_prime*eig_A(2)*eig_A(1))...
-%     /(beta1*eig_A(2)^2 + beta2*eig_A(1)^2 + beta3*eig_A(1)*eig_A(2) + beta4*eig_A(2)*eig_A(1)));
-SE_POS_high = log((beta1_prime + beta2_prime + beta3_prime + beta4_prime)/(beta1 + beta2 + beta3 + beta4));
-% 
-% 
-% SE_POS_low_alt = log((beta1_prime/eig_A(1)^2 + beta2_prime/eig_A(2)^2 + beta3_prime/(eig_A(1)*eig_A(2)) + beta4_prime/(eig_A(2)*eig_A(1)))...
-%     /(beta1/eig_A(1)^2 + beta2/eig_A(2)^2 + beta3/(eig_A(1)*eig_A(2)) + beta4/(eig_A(2)*eig_A(1))));
+SE_part_high = log((beta1_prime + beta2_prime + beta3_prime + beta4_prime)/(beta1 + beta2 + beta3 + beta4));
 
-
-SE_POS_low = log((beta1_prime/abs(eig_A(1))^2 + beta2_prime/abs(eig_A(2))^2 + beta3_prime/(eig_A(1)*conj(eig_A(2))) + beta4_prime/(eig_A(2)*conj(eig_A(1))))...
+SE_part_low = log((beta1_prime/abs(eig_A(1))^2 + beta2_prime/abs(eig_A(2))^2 + beta3_prime/(eig_A(1)*conj(eig_A(2))) + beta4_prime/(eig_A(2)*conj(eig_A(1))))...
      /(beta1/abs(eig_A(1))^2 + beta2/abs(eig_A(2))^2 + beta3/(eig_A(1)*conj(eig_A(2))) + beta4/(eig_A(2)*conj(eig_A(1)))));
 
+%% Fully Observed System (SE_full)
 
-%% Partially Observed System (POS)
+[~,d_BbBbt]=eig(BbBbt);
+d_BbBbt=diag(d_BbBbt);
+eig_num=d_BbBbt(find(abs(d_BbBbt)>eps(10)));
+pdet_BbBbt = eig_num(1)*eig_num(2);
 
-omega_list =  linspace(-10000, 10000, 1000); %creates a range of 1000 frequencies to numerically integrate over
+[~,d_BBt]=eig(BBt);
+d_BBt=diag(d_BBt);
+eig_num=d_BBt(find(abs(d_BBt)>eps(10)));
+pdet_BBt = eig_num(1)*eig_num(2);
 
+SE_full = (log(pdet_BbBbt)-log(pdet_BBt));
 
-powerSpectrumPOS_uncnd = nan(1, length(omega_list));
-powerSpectrumPOS_cnd = nan(1, length(omega_list));
-fracPOS = nan(1, length(omega_list));
-for k = 1:length(omega_list)
-    omega = omega_list(k);
-    powerSpectrumPOS_uncnd(k) = C'*(((abar+eye(3)*sqrt(-1)*omega)\BbBbt)/(abar'-eye(3)*sqrt(-1)*omega))*C/(2*pi); %power spectrum unconditioned on input
-    powerSpectrumPOS_cnd(k) = C'*(((abar+eye(3)*sqrt(-1)*omega)\BBt)/(abar'-eye(3)*sqrt(-1)*omega))*C/(2*pi); %power spectrum conditioned on input
-    fracPOS(k) = (log(powerSpectrumPOS_uncnd(k)) - log(powerSpectrumPOS_cnd(k)))*(r+s)/(pi*((r+s)^2 + omega_list(k)^2)); %integrand in the spectral efficiency integral
-end
-
-MI_POS = real(trapz(omega_list, fracPOS)); % MI per specified frequency band (-Pi/dt to +Pi/dt)
-
-%% Fully Observed System (FOS)
-
-% Direct method to compute spectral efficiency for fully observed system
-% (FOS)
-
-omega_list =  linspace(-10000, 10000, 1000); %creates a range of 1000 frequencies to numerically integrate over
-
-
-pdet_powerSpectrumFOS_uncnd = nan(1, length(omega_list)); %pseudodeterminant of fully observed, unconditioned power spectrum
-pdet_powerSpectrumFOS_cnd = nan(1, length(omega_list)); %pseudodeterminant of fully observed, conditioned power spectrum
-fracFOS = nan(1, length(omega_list)); %integrand in the spectral efficiency integral
-
-
-
-for k = 1:length(omega_list)
-    omega = omega_list(k);
-    powerSpectrumFOS_uncnd = (abar+eye(3)*sqrt(-1)*omega)\BbBbt/(abar'-eye(3)*sqrt(-1)*omega)/(2*pi); %fully observed, unconditioned power spectrum
-    
-    % Computes the pseudo-determinant of the unconditioned power spectrum by finding the product of the nonzero eigenvalues
-    [v_num,d_num]=eig(powerSpectrumFOS_uncnd);
-    d_num=diag(d_num);
-    eig_num=d_num(find(abs(d_num)>eps(10)));
-    if length(eig_num) == 2
-        pdet_powerSpectrumFOS_uncnd(k) = eig_num(1)*eig_num(2);
-    end
-    if length(eig_num) == 1
-        pdet_powerSpectrumFOS_uncnd(k) = eig_num(1);
-    end
-    if length(eig_num) == 0
-        pdet_powerSpectrumFOS_uncnd(k) = 0;
-    end
-    if length(eig_num) == 3
-        pdet_powerSpectrumFOS_uncnd(k) = eig_num(1)*eig_num(2)*eig_num(3);
-    end
-    
-    powerSpectrumFOS_cnd = (abar+eye(3)*sqrt(-1)*omega)\BBt/(abar'-eye(3)*sqrt(-1)*omega)/(2*pi); %fully observed, conditioned power spectrum
-
-    % Computes the pseudo-determinant of the unconditioned power spectrum by finding the product of the nonzero eigenvalues
-    [v_denom,d_denom]=eig(powerSpectrumFOS_cnd);
-    d_denom=diag(d_denom);
-    eig_denom=d_denom(find(abs(d_denom)>eps(10))); %Note: eps(10) returns the distance from 10.0 to the next largest double-precision number
-    if length(eig_denom) == 2
-        pdet_powerSpectrumFOS_cnd(k) = eig_denom(1)*eig_denom(2);
-    end
-    if length(eig_denom) == 1
-        pdet_powerSpectrumFOS_cnd(k) = eig_denom(1);
-    end
-    if length(eig_denom) == 0
-        pdet_powerSpectrumFOS_cnd(k) = 0;
-    end
-    if length(eig_denom) == 3
-        pdet_powerSpectrumFOS_cnd(k) = eig_denom(1)*eig_denom(2)*eig_denom(3);
-    end
-end
-
-for k = 1:length(omega_list)
-    fracFOS(k) = (log(pdet_powerSpectrumFOS_uncnd(k))-log(pdet_powerSpectrumFOS_cnd(k)))*(r+s)/(pi*((r+s)^2 + omega_list(k)^2)); %integrand in the spectral efficiency integral
-end
-
-MI_FOS = real(trapz(omega_list, fracFOS)); % MI per specified frequency band (-Pi/dt to +Pi/dt)
-MI_gap = MI_FOS - MI_POS; %difference between fully and partially observed
-
-SE_FOS = real(fracFOS(1));
-
-
-%%
-
-evalsBBt = eig(BBt);
-evalsBbBbt = eig(BbBbt);
-pdetBBt = evalsBBt(2)*evalsBBt(3);
-pdetBbBbt = evalsBbBbt(2)*evalsBbBbt(3);
-ratio = pdetBbBbt/pdetBBt;
-integrand  = log(ratio);
-
-
-
-%ratioPOS = (C'*BbBbt*C)/(C'*BBt*C);
-
-%% Plots
+%% Plots for SE vs omega
 % figure
 % plot(omega_list, real(fracPOS))
 % title('Three-State Ring Partially Observed: SE vs \omega','FontSize',14)
