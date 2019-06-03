@@ -11,7 +11,7 @@ MI_part_vec = zeros(1, length(p_list));
 
 
 for j = 1:length(p_list)
-    [MI_full, MI_part]  = MI_3state_chain_colored_part(p_list(j)); %Computes MI for Fully Observed Chain
+    [MI_full, MI_part]  = MI_3state_chain_colored(p_list(j)); %Computes MI for Fully Observed Chain
     MI_full_vec(j) = MI_full;
     MI_part_vec(j) = MI_part;
 end
