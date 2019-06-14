@@ -17,9 +17,9 @@ Calculate SE^FULL (spectral efficiency, fully observed case), SE^PART_0
 (SE for partially observed, low freq limit), SE^PART_\infty (SE for
 partially observed, high freq limit).
 
-SE_3state_chain.m		3-state chain
-SE_3state_ring.m		3-state ring (e.g. Channelrhodopsin)
-SE_ACh.m			Acetylcholine
+SE_3state_chain.m		3-state chain  
+SE_3state_ring.m		3-state ring (e.g. Channelrhodopsin) 
+SE_ACh.m			Acetylcholine  
 
 These files take p as an input (probability of high intensity input for
 IID input signal). In these files, baseline transition rate
@@ -27,9 +27,9 @@ IID input signal). In these files, baseline transition rate
 defined internally.  Edit files to change these parameters.  
 They are called by 
 
-SE_3state_chain_sweep_p.m
-SE_3state_ring_sweep_p.m
-SE_ACh_sweep_p.m
+SE_3state_chain_sweep_p.m  
+SE_3state_ring_sweep_p.m  
+SE_ACh_sweep_p.m  
 
 
 
