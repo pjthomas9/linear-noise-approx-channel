@@ -33,8 +33,8 @@ SE_sweep_p.m
 
 ## Colored noise input.  
 
-MI_3state_chain_colored.m
-MI_3state_colored_sweep_p.m
+MI_3state_chain_colored.m  
+MI_3state_colored_sweep_p.m  
 MI_ACh_colored.m
 MI_ACh_colored_sweep_p.m
 SE_3state_chain_plot.m
