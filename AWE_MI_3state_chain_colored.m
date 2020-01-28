@@ -2,7 +2,7 @@
 % colored noise. Function takes p as an input and fixes gamma = alpha +
 % beta
 
-function [MI_full, MI_part, fsv_dot] = MI_3state_chain_colored(p)
+function [MI_full, MI_part, fsv_dot] = AWE_MI_3state_chain_colored(p)
 
 
 %% Input Parameters
